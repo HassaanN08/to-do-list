@@ -9,11 +9,20 @@ const dateSVG = '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" 
 
 const formatDate = (date) => {
     const parsedDate = parse(date, 'yyyy-MM-dd', new Date());
-    if (isToday(parsedDate)) return 'Today';
-    if (isYesterday(parsedDate)) return 'Yesterday';
-    if (isTomorrow(parsedDate)) return 'Tomorrow';
-    if (!isSameYear(new Date(), parsedDate)) return format(date, 'd MMM yyyy');
-    return format(date, 'd MMM');
+    let string;
+    if (isToday(parsedDate)) { 
+        string = 'Today'
+    } else if (isYesterday(parsedDate)) {
+        string = 'Yesterday'
+    } else if (isTomorrow(parsedDate)) {
+        string = 'Tomorrow'
+    } else if (!isSameYear(new Date(), parsedDate)) {
+        string = format(date, 'd MMM yyyy')
+    } else {
+        string = format(date, 'd MMM');
+    }
+    
+    return {string, parsedDate};
 }
 
 const renderToDos = (items, projects) => {
@@ -56,10 +65,12 @@ const renderToDos = (items, projects) => {
                     const date = formatDate(item.dueDate);
 
                     dueDateWrapper.classList.add('due-date');
-                    dueDateWrapper.innerHTML = `${dateSVG} <h6>${date}</h6>`;
+                    dueDateWrapper.innerHTML = `${dateSVG} <h6>${date.string}</h6>`;
 
-                    if (isBefore(date, today)) {
+                    if (isBefore(date.parsedDate, today)) {
                         dueDateWrapper.classList.add('past');
+                    } else {
+                        dueDateWrapper.classList.remove('past');
                     }
                     
                     toggleCompleteBtn.classList.add('toggle-complete');
@@ -126,13 +137,13 @@ const renderSingleSidebarProject = (item, projectList, projectSelector, editProj
     const projectOption1 = document.createElement('option');  //For add task form
     const projectOption2 = document.createElement('option');  //For edit task form
 
-    projectOption1.value = existingProject.id;
-    projectOption1.textContent = existingProject.title;
-    projectOption1.dataset.id = existingProject.id;
+    projectOption1.value = item.id;
+    projectOption1.textContent = item.title;
+    projectOption1.dataset.id = item.id;
 
-    projectOption2.value = existingProject.id;
-    projectOption2.textContent = existingProject.title;
-    projectOption2.dataset.id = existingProject.id;
+    projectOption2.value = item.id;
+    projectOption2.textContent = item.title;
+    projectOption2.dataset.id = item.id;
 
     project.classList.add('project-item');
     project.dataset.id = item.id;
