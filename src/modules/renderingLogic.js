@@ -118,6 +118,7 @@ const modalPosition = (rect, menuWidth, menuHeight, modal) => {
 }
 
 const appRender = () => {
+    santizeLocalStorage();
     const projects = getFromLocalStorage('project') || [];
     const items = getFromLocalStorage('toDo') || [];
 

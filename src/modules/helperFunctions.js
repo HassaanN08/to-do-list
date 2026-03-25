@@ -168,18 +168,23 @@ const santizeLocalStorage = () => {
 
     const sanitizedProjects = projects.reduce((acc, project) => {
         if (project != null && project != undefined && project.id) {
-            return acc.push(project);
+            acc.push(project);
         }
+        
+        return acc;
     }, []);
 
     const sanitizedItems = items.reduce((acc, item) => {
         if (item != null && item !=undefined) {
             sanitizedProjects.forEach((project) => {
                 if (item.projectId == project.id) {
-                    return acc.push(item);
+                    acc.push(item);
+    
                 }
             })
         }
+
+        return acc;
     }, []);
 
     addToLocalStorage('project', sanitizedProjects);
