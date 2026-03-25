@@ -115,6 +115,7 @@ body {
 }
 
 #content {
+    font-family: 'Ubuntu Sans', sans-serif;
     padding: 40px;
     background: black;
     color: white;
