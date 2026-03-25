@@ -347,12 +347,10 @@ dialog::backdrop {
             display: block !important;
         }
     }
-    .due-date {
-        path {
-            fill: grey;
-        }
-        h6 {
-            color: grey;
+    .due-date, .due-date.past {
+        path, h6 {
+            fill: grey !important;
+            color: grey !important;
         }
     }
 }
