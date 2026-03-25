@@ -1,13 +1,13 @@
-import { getFromLocalStorage } from '../appLogic.js';
-
 import { renderToDos } from '../helperFunctions.js';
+import { getState } from '../state.js';
+
+const content = document.querySelector('#content');
 
 const renderAllToDos = () => {
+    const data = getState();
     content.innerHTML = "";
-    const projects = getFromLocalStorage('project') || [];
-    const toDoItems = getFromLocalStorage('toDo') || [];
 
-    renderToDos(toDoItems, projects);
+    renderToDos(data.items, data.projects);
 }
 
 export default renderAllToDos;

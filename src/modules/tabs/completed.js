@@ -1,22 +1,23 @@
-import { getFromLocalStorage } from '../appLogic.js';
-
+import { getState } from '../state.js';
 import { renderToDos } from '../helperFunctions.js';
 
-const getCompletedItems = () => {
-    const items = getFromLocalStorage('toDo') || [];
-    const completedItems = items.filter(item => item.complete);
+const content = document.querySelector('#content');
+
+const getCompletedItems = (data) => {
+    const allItems = data.items;
+    const completedItems = allItems.filter(item => item.complete);
     return completedItems;
 }
 
 const renderCompletedTab = () => {
     content.innerHTML = "";
+    const data = getState();
     content.classList.remove('today', 'upcoming');
     content.classList.add('completed');
     
-    const projects = getFromLocalStorage('project') || [];
-    const items = getCompletedItems();
+    const items = getCompletedItems(data);
 
-    renderToDos(items, projects);
+    renderToDos(items, data.projects);
 }
 
 export default renderCompletedTab;

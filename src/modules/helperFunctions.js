@@ -1,5 +1,6 @@
 import { getFromLocalStorage, addToLocalStorage } from './appLogic.js';
 import { parse, format, isToday, isTomorrow, isYesterday, isBefore, isSameYear } from 'date-fns';
+import { getState } from './state.js';
 
 const hashTagSVG = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" class="Fego6xD" style="color: var(--named-color-charcoal);"><path fill="currentColor" fill-rule="evenodd" d="M15.994 6.082a.5.5 0 1 0-.987-.164L14.493 9h-3.986l.486-2.918a.5.5 0 1 0-.986-.164L9.493 9H7a.5.5 0 1 0 0 1h2.326l-.666 4H6a.5.5 0 0 0 0 1h2.493l-.486 2.918a.5.5 0 1 0 .986.164L9.507 15h3.986l-.486 2.918a.5.5 0 1 0 .987.164L14.507 15H17a.5.5 0 1 0 0-1h-2.326l.667-4H18a.5.5 0 1 0 0-1h-2.493zM14.327 10H10.34l-.667 4h3.987z" clip-rule="evenodd"></path></svg>';
 const checkMarkSVG = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="q0sqJ_a"><path fill-rule="evenodd" clip-rule="evenodd" d="M16.5056 9.00958C16.2128 8.71668 15.7379 8.71668 15.445 9.00958L10.6715 13.7831L8.72649 11.8381C8.43359 11.5452 7.95872 11.5452 7.66583 11.8381C7.37294 12.1309 7.37293 12.6058 7.66583 12.8987L10.1407 15.3736C10.297 15.5299 10.5051 15.6028 10.7097 15.5923C10.8889 15.5833 11.0655 15.5104 11.2023 15.3735L16.5056 10.0702C16.7985 9.77735 16.7985 9.30247 16.5056 9.00958Z" fill="currentColor"></path></svg>';
@@ -109,7 +110,7 @@ const renderToDos = (items, projects) => {
 
 const renderAllSidebarProjects = (projectList, projectSelector, editProjectId) => {
     projectList.innerHTML = "";
-    const existingProjects = getFromLocalStorage('project') || [];
+    const existingProjects = getState().projects;
     existingProjects.forEach((existingProject) => {
         const project = document.createElement('li');
         const projectOption1 = document.createElement('option');  //For add task form
@@ -163,10 +164,9 @@ const hideEmptyProjects = (items, index) => {
 }
 
 const santizeLocalStorage = () => {
-    const projects = getFromLocalStorage('project') || [];
-    const items = getFromLocalStorage('toDo') || [];
+    const state = getState();
 
-    const sanitizedProjects = projects.reduce((acc, project) => {
+    const sanitizedProjects = state.projects.reduce((acc, project) => {
         if (project != null && project != undefined && project.id) {
             acc.push(project);
         }
@@ -174,7 +174,7 @@ const santizeLocalStorage = () => {
         return acc;
     }, []);
 
-    const sanitizedItems = items.reduce((acc, item) => {
+    const sanitizedItems = state.items.reduce((acc, item) => {
         if (item != null && item !=undefined) {
             sanitizedProjects.forEach((project) => {
                 if (item.projectId == project.id) {
@@ -189,8 +189,6 @@ const santizeLocalStorage = () => {
 
     addToLocalStorage('project', sanitizedProjects);
     addToLocalStorage('toDo', sanitizedItems);
-
-    console.log(sanitizedProjects);
 }
 
 export { renderAllSidebarProjects, renderSingleSidebarProject, renderToDos, hideEmptyProjects, santizeLocalStorage };

@@ -1,12 +1,13 @@
-import { getFromLocalStorage } from '../appLogic.js';
 import { renderToDos } from '../helperFunctions.js';
 import { parse, isToday } from 'date-fns';
+import { getState } from '../state.js';
 
 const content = document.querySelector('#content');
 
-const getTodayItems = () => {
-    const items = getFromLocalStorage('toDo') || [];
-    const dueToday = items.filter((item) => {
+const getTodayItems = (data) => {
+    const allItems = data.items;
+
+    const dueToday = allItems.filter((item) => {
         if (isToday(parse(item.dueDate, 'yyyy-MM-dd', new Date())) && !item.complete) {
             return true;
         }
@@ -16,14 +17,14 @@ const getTodayItems = () => {
 }
 
 const renderTodayTab = () => {
+    const data = getState();
     content.innerHTML = "";
     content.classList.remove('completed', 'upcoming');
     content.classList.add('today');
 
-    const items = getTodayItems();
-    const projects = getFromLocalStorage('project') || [];
+    const items = getTodayItems(data);
     
-    renderToDos(items, projects);
+    renderToDos(items, data.projects);
 }
 
 export default renderTodayTab;

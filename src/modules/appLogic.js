@@ -1,3 +1,6 @@
+import { getState, setState } from "./state.js";
+
+
 const createToDo = (formData) => {
     return {
         title: formData.title,
@@ -18,19 +21,20 @@ const createProject = (formData) => {
     }
 }
 
-const editToDo = (type, currentId, formData) => {
-    const items = getFromLocalStorage(type) || [];
-    const currentItem = items.map((item) => {
+const editToDo = (currentId, formData) => {
+    const allItems = getState().items;
+    const updatedItems = allItems.map((item) => {
         if (item.id == currentId) {
             return {...item, ...formData, dueDate: formData.date};
         }
+
+        return item;
     })
 
+    setState({items: updatedItems});
     
-    addToLocalStorage(type, currentItem);
+    addToLocalStorage('toDo', updatedItems);
 }
-
-const toggleComplete = (item) => !item;
 
 const getFromLocalStorage = (type) => {
     return JSON.parse(localStorage.getItem(type))
@@ -38,14 +42,26 @@ const getFromLocalStorage = (type) => {
 
 const addToLocalStorage = (type, item) => {
     localStorage.setItem(type, JSON.stringify(item));
+
+    if (type == 'project') {
+        setState({projects: item});
+    } else {
+        setState({items: item})
+    }
 }
 
 const deleteFromLocalStorage = (type, idToDelete) => {
-    const currentItems = getFromLocalStorage(type) || [];
+    let currentItems;
+
+    if (type == 'project') {
+        currentItems = getState().projects;
+    } else {
+        currentItems = getState().items;
+    }
 
     const newItems = currentItems.filter(item => item.id != idToDelete);
 
     addToLocalStorage(type, newItems);
 }
 
-export { createProject, createToDo, toggleComplete, editToDo, addToLocalStorage, deleteFromLocalStorage, getFromLocalStorage }
+export { createProject, createToDo, editToDo, addToLocalStorage, deleteFromLocalStorage, getFromLocalStorage }

@@ -1,12 +1,13 @@
 import { 
     createProject, 
-    createToDo, 
-    toggleComplete, 
+    createToDo,  
     editToDo, 
     addToLocalStorage, 
     deleteFromLocalStorage, 
-    getFromLocalStorage 
+    getFromLocalStorage,
 } from './appLogic.js';
+
+import { getState, setState } from "./state.js";
 
 import renderAllToDos from './tabs/all.js';
 import renderTodayTab from './tabs/today.js';
@@ -84,14 +85,19 @@ const submitEventHandler = (e, form, type, create) => {
     e.preventDefault();
 
     const formData = new FormData(form);
-    const data = Object.fromEntries(formData.entries());
+    const newData = Object.fromEntries(formData.entries());
 
     if (form.dataset.id) {
-        create(type, form.dataset.id, data);
+        create(form.dataset.id, newData);
     } else {
-        const item = create(data);
+        const item = create(newData);
 
-        const existingArr = getFromLocalStorage(type) || [];
+        let existingArr;
+        if (type == 'project') {
+            existingArr = getState().projects;
+        } else {
+            existingArr = getState().items;
+        }
         const newArr = [...existingArr, item];
 
         addToLocalStorage(type, newArr);
@@ -118,11 +124,13 @@ const modalPosition = (rect, menuWidth, menuHeight, modal) => {
 }
 
 const appRender = () => {
-    santizeLocalStorage();
-    const projects = getFromLocalStorage('project') || [];
-    const items = getFromLocalStorage('toDo') || [];
 
-    if (projects.length == 0 || !projects) {
+    setState({projects: getFromLocalStorage('project'), items: getFromLocalStorage('toDo')});
+    santizeLocalStorage();
+
+    const initialData = getState();
+
+    if (!initialData.projects || initialData.projects.length == 0) {
         const project = createProject({ title: 'Get Started' });
         const item = createToDo({title: 'Get Started', date: minDate, priority: 'p4', projectId: project.id});
         addToLocalStorage('project', [project]);
@@ -133,7 +141,9 @@ const appRender = () => {
     renderAllSidebarProjects(projectList, projectSelector, editProjectId);
     
     document.body.addEventListener('click', (e) => {
-         if (e.target.closest('#today')) {
+
+
+        if (e.target.closest('#today')) {
             e.preventDefault();
             renderTodayTab();
         } else if (e.target.closest('#upcoming')) {
@@ -181,10 +191,10 @@ const appRender = () => {
             e.stopPropagation();
         } else if (e.target.closest('.del-project')) {
             e.preventDefault();
-            const items = getFromLocalStorage('project') || [];
-            const currentItemIndex = items.findIndex(item => item.id == e.target.dataset.id);
+            const allProjects = getState().projects;
+            const currentItemIndex = allProjects.findIndex(item => item.id == e.target.dataset.id);
             
-            delText.textContent = `The ${items[currentItemIndex].title} project and all of its tasks will be permanently deleted.`
+            delText.textContent = `The ${allProjects[currentItemIndex].title} project and all of its tasks will be permanently deleted.`
             
             document.body.append(confirmDeletionModal);
             confirmDeletionModal.showModal();
@@ -194,7 +204,7 @@ const appRender = () => {
             e.preventDefault();
             const currentProjectId = e.target.dataset.id;
 
-            const currentItems = getFromLocalStorage('toDo') || [];
+            const currentItems = getState().items;
             const newItems = currentItems.filter(item => item.projectId != currentProjectId);
             addToLocalStorage('toDo', newItems);
 
@@ -217,7 +227,7 @@ const appRender = () => {
         } else if (e.target.closest('.to-do-wrap .toggle-complete')) {
             e.preventDefault();
             const itemId = e.target.closest('.to-do-wrap').dataset.id;
-            const allItems = getFromLocalStorage('toDo') || [];
+            const allItems = getState().items;
             const currentItemIndex = allItems.findIndex(item => item.id == itemId);
     
             if (allItems[currentItemIndex].complete == true) {
@@ -252,7 +262,7 @@ const appRender = () => {
         } else if (e.target.closest('.del-to-do')) {
             e.preventDefault();
             const itemId = e.target.closest('.to-do-context-menu').dataset.id;
-            const allItems = getFromLocalStorage('toDo') || [];
+            const allItems = getState().items;
             const currentItemIndex = allItems.findIndex(item => item.id == itemId);
 
             document.querySelector(`.to-do-wrap[data-id="${itemId}"]`).remove();
@@ -267,10 +277,8 @@ const appRender = () => {
             editTaskModal.dataset.id = e.target.closest('.to-do-context-menu').dataset.id;
             const itemId = editTaskModal.dataset.id;
             editTaskForm.dataset.id = itemId;
-            const allItems = getFromLocalStorage('toDo') || [];
+            const allItems = getState().items;
             const currentItemIndex = allItems.findIndex(item => item.id == itemId);
-
-            console.log(editTaskModal.querySelector('input[name="title"]').value);
 
             const currentTitle = editTaskModal.querySelector('input[name="title"]');
             const currentDescription = editTaskModal.querySelector('textarea[name="description"]');

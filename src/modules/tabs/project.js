@@ -1,11 +1,11 @@
-import { getFromLocalStorage } from '../appLogic.js';
 import { renderToDos } from '../helperFunctions.js';
+import { getState } from '../state.js';
 
 const content = document.querySelector('#content');
 
-const getProjectItems = (currentId) => {
-    const items = getFromLocalStorage('toDo') || [];
-    const projectItems = items.filter((item) => {
+const getProjectItems = (currentId, data) => {
+    const allItems = data.items;
+    const projectItems = allItems.filter((item) => {
         if (item.projectId == currentId) {
             return true;
         };
@@ -15,13 +15,12 @@ const getProjectItems = (currentId) => {
 }
 
 const renderProjectTab = (projectId) => {
+    const data = getState();
     content.innerHTML = "";
 
-    const items = getProjectItems(projectId);
-    console.log(items);
-    const projects = getFromLocalStorage('project') || [];
+    const items = getProjectItems(projectId, data);
     
-    renderToDos(items, projects);
+    renderToDos(items, data.projects);
 }
 
 export default renderProjectTab;
