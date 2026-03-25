@@ -317,6 +317,7 @@ dialog::backdrop {
 .toggle-complete {
     padding: 0 !important;
     border-radius: 1000px;
+    border: none;
     align-self: start;
     display: flex;
     aspect-ratio: 1;

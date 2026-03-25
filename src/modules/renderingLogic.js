@@ -278,7 +278,9 @@ const appRender = () => {
             const currentPriority = editTaskModal.querySelector('select[name="priority"]');
 
             currentTitle.value = allItems[currentItemIndex].title;
-            currentDescription.value = allItems[currentItemIndex].description;
+            if (allItems[currentItemIndex].description) {
+                currentDescription.value = allItems[currentItemIndex].description;
+            }
             currentDueDate.value = allItems[currentItemIndex].dueDate;
             currentPriority.value = allItems[currentItemIndex].priority;
             editProjectId.value = allItems[currentItemIndex].projectId;

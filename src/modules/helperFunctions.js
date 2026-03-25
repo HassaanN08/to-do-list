@@ -67,9 +67,9 @@ const renderToDos = (items, projects) => {
                     dueDateWrapper.classList.add('due-date');
                     dueDateWrapper.innerHTML = `${dateSVG} <h6>${date.string}</h6>`;
 
-                    if (isBefore(date.parsedDate, today) && !isToday(date.parsedDate)) {
+                    if (isBefore(date.parsedDate, today) && !isToday(date.parsedDate) && !dueDateWrapper.classList.contains('past')) {
                         dueDateWrapper.classList.add('past');
-                    } else {
+                    } else if (!isBefore(date.parsedDate, today) && isToday(date.parsedDate) && dueDateWrapper.classList.contains('past')) {
                         dueDateWrapper.classList.remove('past');
                     }
                     
