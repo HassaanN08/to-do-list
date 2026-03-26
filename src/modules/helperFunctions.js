@@ -175,7 +175,7 @@ const santizeLocalStorage = () => {
     }, []);
 
     const sanitizedItems = state.items.reduce((acc, item) => {
-        if (item != null && item !=undefined) {
+        if (item != null && item !=undefined && item.id) {
             sanitizedProjects.forEach((project) => {
                 if (item.projectId == project.id) {
                     acc.push(item);

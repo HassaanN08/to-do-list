@@ -125,7 +125,7 @@ const modalPosition = (rect, menuWidth, menuHeight, modal) => {
 
 const appRender = () => {
 
-    setState({projects: getFromLocalStorage('project'), items: getFromLocalStorage('toDo')});
+    setState({projects: getFromLocalStorage('project') || [], items: getFromLocalStorage('toDo') || []});
     santizeLocalStorage();
 
     const initialData = getState();
